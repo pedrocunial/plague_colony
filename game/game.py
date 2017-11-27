@@ -12,6 +12,7 @@ class Game:
 		self.size_square = 20
 		self.node_selected = False
 		self.connections = []
+		self.round = 1500
 		self._create_objects()
 		self._create_connections()
 	
@@ -19,6 +20,7 @@ class Game:
 		self.brasil = pygame.image.load('Pictures/mapa_brasil.png')
 		self.nodes = {}
 		self._create_tribes()
+		self.next_button = {'object': pygame.Rect(1600, 850, 300, 150), 'color': (255, 255, 255), 'is_clicked': False}	
 
 	def _create_node(self, x, y, color, name):
 			pygame_obj = pygame.Rect(x, y, self.size_square, self.size_square)
@@ -57,6 +59,14 @@ class Game:
 			population = self.text_small.render("Populacao: {}".format(self.nodes[node]['population']), False, (255, 0, 0))
 			self.screen.blit(population, (1420, 150))
 
+	def _draw_next_round_button(self):
+		color = self.next_button['color']
+		if (self.next_button['is_clicked']):
+			color = (255, 0, 255)
+		pygame.draw.rect(self.screen, color, self.next_button['object'])
+		next_txt = self.text_large.render("NEXT", False, (0, 0, 0))
+		self.screen.blit(next_txt,(1680, 880))
+
 	def _draw_connections(self):
 		for i in self.connections:
 			if (i['is_positive']):
@@ -76,6 +86,10 @@ class Game:
 			connection = {'node_1': pos_1, 'node_2': pos_2, 'is_positive': is_positive}
 			self.connections.append(connection)
 
+	def _draw_text(self):
+		round_num = self.text_large.render(str(self.round), False, (255, 255, 255))
+		self.screen.blit(round_num, (10, 10))
+
 	def run_game(self):
 		while not self.done:
 			for event in pygame.event.get():
@@ -86,6 +100,12 @@ class Game:
 					for i in self.nodes:
 						if self.nodes[i]['object'].collidepoint(mouse_pos):
 							self.node_selected = i
+					if self.next_button['object'].collidepoint(mouse_pos):
+						self.next_button['is_clicked'] = True
+						self.round += 10
+				if event.type == pygame.MOUSEBUTTONUP:
+					self.next_button['is_clicked'] = False
+
 
 			self.screen.fill((0, 0, 0))
 			self.screen.blit(self.brasil, (300, 0))
@@ -99,5 +119,7 @@ class Game:
 			
 			self._draw_info_board()
 			self._draw_connections()
+			self._draw_next_round_button()
+			self._draw_text()
 			pygame.display.flip()
 			self.clock.tick(60)
