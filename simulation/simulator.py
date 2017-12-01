@@ -1,6 +1,6 @@
-from random import choice, randint
+from random import choice, randint, random
 from functools import reduce
-from random_graph_generator import *
+from random_graph import *
 
 
 class Simulator:
@@ -65,7 +65,7 @@ class Simulator:
 
     def _flip_edge(self, n, m):
         e = self.g.edges[n, m]['label']
-        self.g.egdes[n, m]['label'] = '-' if e == '+' else '+'
+        self.g.edges[n, m]['label'] = '-' if e == '+' else '+'
 
 
     def _resolve_combat(self, fighters):
@@ -76,15 +76,15 @@ class Simulator:
             self.g.node[l]['population'] = pop
             self.g.node[l]['nationality'] = self.g.node[w]['nationality']  # converted
 
-            for n in list(g.neighbors(l)):
+            for n in list(self.g.neighbors(l)):
                 self._flip_edge(l, n)
 
 
     def iteration(self):
-        P = 1   # 10% chance a '-' edge will fight
+        P = .1  # 10% chance an edge will fight
         fighters = set()
         for n, m in self.g.edges():
-            if self.g.edges[n, m]['label'] == '-' and randint(0, 9) < P:
+            if self.g.edges[n, m]['label'] == '-' and random() < P:
                 l = self._fight(n, m)
                 fighters.add((l, m if l == n else n))  # (looser, winner)
 
@@ -111,14 +111,14 @@ class Simulator:
         portuguese: {:6d} -- {:3.2f}% of total -- {:3.2f}% of initial
         native:     {:6d} -- {:3.2f}% of total -- {:3.2f}% of initial
         '''.format(pt, (pt / (pt + nt)) * 100,
-                   pt / self.initial_population['portuguese'] * 100,
+                   pt / self.g_obj.initial_population['portuguese'] * 100,
                    nt, (nt / (pt + nt)) * 100,
-                   nt / self.initial_population['native'] * 100))
+                   nt / self.g_obj.initial_population['native'] * 100))
 
 
 if __name__ == '__main__':
-    gobj = RandomGraph()
+    gobj = RandomGraph(500, .2)
     gobj.generate_graph()
-    gobj.generate_edges()
+    gobj.generate_edges(.05)
     sim = Simulator(gobj)
     sim.simulate(5)
