@@ -10,6 +10,8 @@ from random import random, choice, randint
 
 class SimulationGraph:
 
+
+
     def __init__(self, nodes, p):
         '''
         :nodes => nodes['number']      # id
@@ -39,7 +41,7 @@ class SimulationGraph:
             pop = randint(40, 200)
             self.initial_population['native'] += pop
             self.g.add_node(
-                n['number'],  # node index = ['number']
-                n['nationality']='native',
-                n['population']=pop
+                n['number'],
+                nationality='native',
+                population=pop
             )

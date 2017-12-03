@@ -12,6 +12,7 @@ class Simulator:
     def __init__(self, g_obj):
         self.g = g_obj.g
         self.g_obj = g_obj
+        self.moves = []
 
 
     def _count_pt_neighbors(self, n):
@@ -80,6 +81,21 @@ class Simulator:
                 self._flip_edge(l, n)
 
 
+    def _save_moves(self):
+        self.moves.append({
+            'nodes': [{
+                'number': n,
+                'population': self.g.node[n]['population'],
+                'nationality': self.g.node[n]['nationality'],
+            } for n in g.nodes()],
+            'edges': [{
+                'nodes': (n, m),
+                'label': g.edges[n, m]['label'],
+            } for n, m in g.edges()],
+            'initial_population': self.g.initial_population
+        })
+
+
     def iteration(self):
         P = .1  # 10% chance an edge will fight
         fighters = set()
@@ -89,6 +105,7 @@ class Simulator:
                 fighters.add((l, m if l == n else n))  # (looser, winner)
 
         self._resolve_combat(fighters)
+        self._save_moves()
 
 
     def simulate(self, n):
@@ -107,13 +124,16 @@ class Simulator:
             else:
                 nt += self.g.node[n]['population']
 
-        print('''
-        portuguese: {:6d} -- {:3.2f}% of total -- {:3.2f}% of initial
-        native:     {:6d} -- {:3.2f}% of total -- {:3.2f}% of initial
-        '''.format(pt, (pt / (pt + nt)) * 100,
-                   pt / self.g_obj.initial_population['portuguese'] * 100,
-                   nt, (nt / (pt + nt)) * 100,
-                   nt / self.g_obj.initial_population['native'] * 100))
+        try:
+            print('''
+            portuguese: {:6d} -- {:3.2f}% of total -- {:3.2f}% of initial
+            native:     {:6d} -- {:3.2f}% of total -- {:3.2f}% of initial
+            '''.format(pt, (pt / (pt + nt)) * 100,
+                    pt / self.g_obj.initial_population['portuguese'] * 100,
+                    nt, (nt / (pt + nt)) * 100,
+                    nt / self.g_obj.initial_population['native'] * 100))
+        except:  # division by 0
+            print('Both populations are 0')
 
 
 if __name__ == '__main__':
