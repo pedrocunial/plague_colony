@@ -62,9 +62,10 @@ class SimulationGraph(SGraph):
 
     def __init__(self, nodes, p):
         '''
-        :nodes => nodes['number']      # id
-               => nodes['neighbors']   # neighbors (id, bool(pos/neg))
-               => nodes['nationality]  # str (portuguese/native)
+        :nodes => nodes['number']       # int id
+               => nodes['neighbors']    # list id neighbors
+               => nodes['nationality']  # str (portuguese/native)
+               => nodes['population']   # int population
         :p     => float between 0 and 1
         '''
         self.nodes = nodes
@@ -74,10 +75,11 @@ class SimulationGraph(SGraph):
 
 
     def generate_edges(self, p):
-        for n in self.nodes:
+        for k, n in self.nodes.items():
             for m in n['neighbors']:
-                if random() < P:  # chance to fight
-                    self.g.add_edge(n, m[0], label='+' if m[1] else '-')
+                if random() < p:  # chance to create an edge
+                    # 50% chance of each type of edge
+                    self.g.add_edge(n['number'], m, label='+' if random() > .5 else '-')
 
 
     def generate_nodes(self):
@@ -86,11 +88,10 @@ class SimulationGraph(SGraph):
             'portuguese': 0,
             'native': 0,
         }
-        for n in self.nodes:
-            pop = randint(40, 200)
-            self.initial_population['native'] += pop
+        for k, n in self.nodes.items():
+            self.initial_population['native'] += n['population']
             self.g.add_node(
                 n['number'],
-                nationality='native',
-                population=pop
+                nationality=n['nationality'],
+                population=n['population']
             )
