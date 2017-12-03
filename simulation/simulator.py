@@ -1,5 +1,5 @@
 import pickle
-
+from math import ceil
 from random import choice, randint, random
 from functools import reduce
 from random_graph import *
@@ -15,7 +15,9 @@ class Simulator:
         self.g = g_obj.g
         self.g_obj = g_obj
         self.moves = []
-
+        self.win_eq = [
+            (1, 0.7)
+        ]
 
     def _count_pt_neighbors(self, n):
         return sum(list(map(lambda x: x[1],
@@ -47,12 +49,30 @@ class Simulator:
         return self.g.node[n]['nationality'] == self.PORTUGUESE and \
             self.g.node[m]['nationality'] == self.NATIVE
 
+    def _calculate_win_probability(self, n, m):
+        '''
+        calculates win probability based on equation
+        P = k0*F0 + k1*F1 + ... + kn*Fn
+            ---------------------------
+                       sum(k)
+        '''
+        prob = 0
+
+        pop_n = self.g.node[n]['population'] / \
+            (self.g.node[n]['population'] + self.g.node[m]['population'])
+
+        self.win_eq.append((0.5, pop_n))
+
+        for term in self.win_eq:
+            prob += term[0] * term[1]
+
+        return prob / sum([x[1] for x in self.win_eq])
 
     def _fight(self, n, m):
         '''
         returns the looser of a simulated fight between n and m
         '''
-        P = 70  # 70% chance
+        P = self._calculate_win_probability(n, m)
         if self.g.node[n]['nationality'] == self.g.node[m]['nationality'] and \
            self.g.node[n]['nationality'] == self.NATIVE:
             return self._fight_native_vs_native(n, m)
@@ -82,6 +102,10 @@ class Simulator:
             for n in list(self.g.neighbors(l)):
                 self._flip_edge(l, n)
 
+    # percentage: 0.0 - 1.0
+    def _increase_population(self, percentage):
+        for n in self.g.nodes():
+            self.g.node[n]['population'] = ceil(self.g.node[n]['population'] * percentage)
 
     def _save_moves(self):
         self.moves.append({
@@ -112,8 +136,8 @@ class Simulator:
                 fighters.add((l, m if l == n else n))  # (looser, winner)
 
         self._resolve_combat(fighters)
+        self._increase_population(.1) # Increase by 10%
         self._save_moves()
-
 
     def simulate(self, n):
         for _ in range(n):
