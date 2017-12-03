@@ -1,3 +1,4 @@
+import pickle
 from math import ceil
 from random import choice, randint, random
 from functools import reduce
@@ -13,6 +14,7 @@ class Simulator:
     def __init__(self, g_obj):
         self.g = g_obj.g
         self.g_obj = g_obj
+        self.moves = []
         self.win_eq = [
             (1, 0.7)
         ]
@@ -105,6 +107,26 @@ class Simulator:
         for n in self.g.nodes():
             self.g.node[n]['population'] = ceil(self.g.node[n]['population'] * percentage)
 
+    def _save_moves(self):
+        self.moves.append({
+            'nodes': [{
+                'number': n,
+                'population': self.g.node[n]['population'],
+                'nationality': self.g.node[n]['nationality'],
+            } for n in self.g.nodes()],
+            'edges': [{
+                'nodes': (n, m),
+                'label': self.g.edges[n, m]['label'],
+            } for n, m in self.g.edges()],
+            'initial_population': self.g.initial_population
+        })
+
+
+    def save_game(self, fname):
+        ''' fname str: like "game00.p" '''
+        pickle.dump(self.moves, open(fname, 'wb'))
+
+
     def iteration(self):
         P = .1  # 10% chance an edge will fight
         fighters = set()
@@ -115,6 +137,7 @@ class Simulator:
 
         self._resolve_combat(fighters)
         self._increase_population(.1) # Increase by 10%
+        self._save_moves()
 
     def simulate(self, n):
         for _ in range(n):
@@ -132,13 +155,16 @@ class Simulator:
             else:
                 nt += self.g.node[n]['population']
 
-        print('''
-        portuguese: {:6d} -- {:3.2f}% of total -- {:3.2f}% of initial
-        native:     {:6d} -- {:3.2f}% of total -- {:3.2f}% of initial
-        '''.format(pt, (pt / (pt + nt)) * 100,
-                   pt / self.g_obj.initial_population['portuguese'] * 100,
-                   nt, (nt / (pt + nt)) * 100,
-                   nt / self.g_obj.initial_population['native'] * 100))
+        try:
+            print('''
+            portuguese: {:6d} -- {:3.2f}% of total -- {:3.2f}% of initial
+            native:     {:6d} -- {:3.2f}% of total -- {:3.2f}% of initial
+            '''.format(pt, (pt / (pt + nt)) * 100,
+                    pt / self.g_obj.initial_population['portuguese'] * 100,
+                    nt, (nt / (pt + nt)) * 100,
+                    nt / self.g_obj.initial_population['native'] * 100))
+        except:  # division by 0
+            print('Both populations are 0')
 
 
 if __name__ == '__main__':
