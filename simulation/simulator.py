@@ -103,7 +103,7 @@ class Simulator:
     # percentage: 0.0 - 1.0
     def _increase_population(self, percentage):
         for n in self.g.nodes():
-            n['population'] = ceil(n['population'] * percentage)
+            self.g.node[n]['population'] = ceil(self.g.node[n]['population'] * percentage)
 
     def iteration(self):
         P = .1  # 10% chance an edge will fight
