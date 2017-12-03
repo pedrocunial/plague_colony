@@ -86,6 +86,12 @@ class Game:
             )
             self.screen.blit(population, (1420, 150))
 
+            domination = self.text_small.render(
+                'Nacionalidade dominante: {}'.format('Português' if self.simulator\
+                .g.node[self.nodes[node]['number']]['nationality'] == 'portuguese'\
+                else 'Nativo'), False, (255, 0, 0))
+            self.screen.blit(domination, (1420, 240))
+
             # number = self.text_small.render("Numero: {}".format(self.nodes[node]['number']), False, (255, 0, 0))
             # self.screen.blit(number, (1420, 200))
 
