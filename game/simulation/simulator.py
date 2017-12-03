@@ -105,7 +105,8 @@ class Simulator:
     # percentage: 0.0 - 1.0
     def _increase_population(self, percentage):
         for n in self.g.nodes():
-            self.g.node[n]['population'] += ceil(self.g.node[n]['population'] * percentage)
+            self.g.node[n]['population'] += ceil(self.g.node[n]['population'] * (
+                percentage if self.g.node[n]['nationality'] == self.NATIVE else 2 * percentage))
 
     def _save_moves(self):
         self.moves.append({
@@ -136,7 +137,7 @@ class Simulator:
                 fighters.add((l, m if l == n else n))  # (looser, winner)
 
         self._resolve_combat(fighters)
-        self._increase_population(.1) # Increase by 10%
+        self._increase_population(.05) # Increase by 10%
         self._save_moves()
 
     def simulate(self, n):

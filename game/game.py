@@ -34,34 +34,37 @@ class Game:
         self.next_button = {'object': pygame.Rect(1600, 850, 300, 150),
                             'color': (255, 255, 255), 'is_clicked': False}
 
-    def _create_node(self, x, y, color, name):
+    def _create_node(self, x, y, color, name, nationality):
             pygame_obj = pygame.Rect(x, y, self.size_square, self.size_square)
+            pop = random.randint(40, 200) if nationality == 'native' \
+                  else random.randint(20, 50)
             result = {
                 'object': pygame_obj,
                 'color': color,
                 'name': name,
-                'population': random.randint(40, 200),
+                'population': pop,
                 'number': self.current_node,
-                'nationality': 'native',
+                'nationality': nationality,
             }
             self.current_node += 1
             return result
 
     def _create_tribes(self):
-        self.nodes['tupi_2'] = self._create_node(1200, 310, [255, 0, 0], 'Tupi')
-        self.nodes['tupi_1'] = self._create_node(700, 330, [255, 0, 0], 'Tupi')
-        self.nodes['tupi_3'] = self._create_node(800, 600, [255, 0, 0], 'Tupi')
-        self.nodes['tupi_4'] = self._create_node(700, 300, [255, 0, 0], 'Tupi')
-        self.nodes['je'] = self._create_node(950, 400, [255, 0, 0], 'Je')
-        self.nodes['je_2'] = self._create_node(900, 700, [255, 0, 0], 'Je')
-        self.nodes['karib'] = self._create_node(700, 150, [255, 0, 0], 'Karib')
-        self.nodes['pano'] = self._create_node(400, 300, [255, 0, 0], 'Pano')
-        self.nodes['charrua'] = self._create_node(800, 900, [255, 0, 0], 'Charrua')
-        self.nodes['aruak'] = self._create_node(500, 250, [255, 0, 0], 'Aruak')
-        self.nodes['tukano'] = self._create_node(550, 175, [255, 0, 0], 'Tukano')
-        self.nodes['surui'] = self._create_node(600, 400, [255,0,0], 'Surui')
-        self.nodes['araute'] = self._create_node(900, 340, [255, 0, 0], 'Araute')
-        self.nodes['pataxo'] = self._create_node(1100, 550, [255, 0, 0], 'Pataxo')
+        self.nodes['tupi_2'] = self._create_node(1200, 310, (255, 0, 0), 'Tupi', 'native')
+        self.nodes['tupi_1'] = self._create_node(700, 330, (255, 0, 0), 'Tupi', 'native')
+        self.nodes['tupi_3'] = self._create_node(800, 600, (255, 0, 0), 'Tupi', 'native')
+        self.nodes['tupi_4'] = self._create_node(700, 300, (255, 0, 0), 'Tupi', 'native')
+        self.nodes['je'] = self._create_node(950, 400, (255, 0, 0), 'Je', 'native')
+        self.nodes['je_2'] = self._create_node(900, 700, (255, 0, 0), 'Je', 'native')
+        self.nodes['karib'] = self._create_node(700, 150, (255, 0, 0), 'Karib', 'native')
+        self.nodes['pano'] = self._create_node(400, 300, (255, 0, 0), 'Pano', 'native')
+        self.nodes['charrua'] = self._create_node(800, 900, (255, 0, 0), 'Charrua', 'native')
+        self.nodes['aruak'] = self._create_node(500, 250, (255, 0, 0), 'Aruak', 'native')
+        self.nodes['tukano'] = self._create_node(550, 175, (255, 0, 0), 'Tukano', 'native')
+        self.nodes['surui'] = self._create_node(600, 400, (255,0,0), 'Surui', 'native')
+        self.nodes['araute'] = self._create_node(900, 340, (255, 0, 0), 'Araute', 'native')
+        self.nodes['pataxo'] = self._create_node(1100, 550, (255, 0, 0), 'Pataxo', 'native')
+        self.nodes['portugues'] = self._create_node(1160, 500, (0, 0, 255), 'Portugues', 'portuguese')
 
     def _draw_info_board(self):
         self.close = pygame.Rect(1700, 650, 150, 50)
@@ -132,6 +135,7 @@ class Game:
             self.nodes['surui']['neighbors'] = [7, 1, 9, 3]
             self.nodes['araute']['neighbors'] = [4, 1, 3, 0]
             self.nodes['pataxo']['neighbors'] = [4, 5, 0]
+            self.nodes['portugues']['neighbors'] = [0, 13]
 
     def _get_node_by_number(self, number):
         for i in self.nodes:
@@ -204,7 +208,10 @@ class Game:
                 if (i == self.node_selected):
                     self.nodes[i]['color'] = (0, 255 ,0)
                 else:
-                    self.nodes[i]['color'] = (255, 0, 0)
+                    self.nodes[i]['color'] = (255, 0, 0) if \
+                                             self.simulator.g.nodes[
+                                                 self.nodes[i]['number']]['nationality'] == 'native'\
+                                             else (0, 0, 255)
                 pygame.draw.rect(self.screen, self.nodes[i]['color'], self.nodes[i]['object'])
 
             # Funcoes de draw extras
