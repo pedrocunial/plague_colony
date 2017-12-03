@@ -2,7 +2,7 @@ import pickle
 from math import ceil
 from random import choice, randint, random
 from functools import reduce
-from random_graph import *
+# from random_graph import *
 
 
 class Simulator:
@@ -118,7 +118,7 @@ class Simulator:
                 'nodes': (n, m),
                 'label': self.g.edges[n, m]['label'],
             } for n, m in self.g.edges()],
-            'initial_population': self.g.initial_population
+            'initial_population': self.g_obj.initial_population
         })
 
 
