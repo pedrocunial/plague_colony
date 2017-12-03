@@ -102,7 +102,7 @@ class Simulator:
 
     # percentage: 0.0 - 1.0
     def _increase_population(self, percentage):
-        for n in self.g.nodes:
+        for n in self.g.nodes():
             n['population'] = ceil(n['population'] * percentage)
 
     def iteration(self):
