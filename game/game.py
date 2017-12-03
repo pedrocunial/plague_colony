@@ -209,7 +209,8 @@ class Game:
                     self.nodes[i]['color'] = (0, 255 ,0)
                 else:
                     self.nodes[i]['color'] = (255, 0, 0) if \
-                                             self.nodes[i]['nationality'] == 'native'\
+                                             self.simulator.g.nodes[
+                                                 self.nodes[i]['number']]['nationality'] == 'native'\
                                              else (0, 0, 255)
                 pygame.draw.rect(self.screen, self.nodes[i]['color'], self.nodes[i]['object'])
 
