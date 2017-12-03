@@ -1,3 +1,5 @@
+import pickle
+
 from random import choice, randint, random
 from functools import reduce
 from random_graph import *
@@ -94,6 +96,11 @@ class Simulator:
             } for n, m in g.edges()],
             'initial_population': self.g.initial_population
         })
+
+
+    def save_game(self, fname):
+        ''' fname str: like "game00.p" '''
+        pickle.dump(self.moves, open(fname, 'wb'))
 
 
     def iteration(self):
