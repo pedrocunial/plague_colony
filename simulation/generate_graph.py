@@ -39,7 +39,7 @@ class LoadGraph(SGraph):
             'neighbors': [(m, True if self.g.edges[n, m]['label'] == '+' else False)
                           for m in list(self.g.neighbors())],
             'nationality': self.g.node[n]['nationality'],
-        } for n in g.nodes()]
+        } for n in self.g.nodes()]
 
 
     def __init__(self, fname):

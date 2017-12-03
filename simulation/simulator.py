@@ -89,11 +89,11 @@ class Simulator:
                 'number': n,
                 'population': self.g.node[n]['population'],
                 'nationality': self.g.node[n]['nationality'],
-            } for n in g.nodes()],
+            } for n in self.g.nodes()],
             'edges': [{
                 'nodes': (n, m),
-                'label': g.edges[n, m]['label'],
-            } for n, m in g.edges()],
+                'label': self.g.edges[n, m]['label'],
+            } for n, m in self.g.edges()],
             'initial_population': self.g.initial_population
         })
 
