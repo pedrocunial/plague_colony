@@ -1,3 +1,4 @@
+from math import ceil
 from random import choice, randint, random
 from functools import reduce
 from random_graph import *
@@ -99,6 +100,10 @@ class Simulator:
             for n in list(self.g.neighbors(l)):
                 self._flip_edge(l, n)
 
+    # percentage: 0.0 - 1.0
+    def _increase_population(self, percentage):
+        for n in self.g.nodes:
+            n['population'] = ceil(n['population'] * percentage)
 
     def iteration(self):
         P = .1  # 10% chance an edge will fight
@@ -109,7 +114,7 @@ class Simulator:
                 fighters.add((l, m if l == n else n))  # (looser, winner)
 
         self._resolve_combat(fighters)
-
+        self._increase_population(.1) # Increase by 10%
 
     def simulate(self, n):
         for _ in range(n):
